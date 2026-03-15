@@ -93,13 +93,21 @@ def desconto_escalonado():
             # esses outros valores apos o "for" são simplificações do "for" de cima com os valores respectitivos na ordem dada
             for d, li, ls, tx in faixas[:-1]:
                 condicoes.append((df['Total Revenue'] >= li) & (df['Total Revenue'] <= ls))
+     #Esta linha só é executada quando a faixa atual é a "Outros / Sem desconto" (ou seja, quando lim_inf é None), "condiçoes" foi criado anteriormene no codigo com mascaras (que diga-se de passagem é um nome que nao faz sentido nenhum, nao sei o que isso tem haver com a sua real ultilidade, mas ela serve para deixar passar so o que foi definido para passar
             mascara = ~np.any(condicoes, axis=0)
         else:
             mascara = (df['Total Revenue'] >= lim_inf) & (df['Total Revenue'] <= lim_sup)
 #aqui em baixo serve para definir os itens e valores finais para o calculos
+
+        #filtra o DataFrame original df, selecionando apenas as linhas onde a mascara é True e com isso o resultado é um novo DataFrame contendo somente os itens que pertencem à faixa atual.
         itens = df[mascara]
+
+        #conta a quantidade de itens
         qtd = len(itens)
+
+        #soma os valores dos itens para se tornar o valor total
         valor_total = itens['Total Revenue'].sum()
+        #os ccalculos triviais de desconto e desconto total
         desconto = valor_total * taxa
         desconto_total += desconto
         relatorio.append(f"{descricao:<20} | {qtd:>5} | {valor_total:>15,.2f} | {taxa*100:>5.1f}% | {desconto:>15,.2f}")
